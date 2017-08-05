@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
-import { getMovies } from '../Services/omdb'
 import Header from '../Components/Header'
-import { path, map } from 'ramda'
+import Table from '../Components/Table'
+import { path } from 'ramda'
+import { connect } from 'react-redux'
+import { fetchMovies } from '../Store/actions/omdb'
 
 class App extends Component {
   constructor(props) {
@@ -17,14 +19,12 @@ class App extends Component {
   onInputChange(movieTitle) {
     this.setState({movieTitle})
   }
-  async onSubmit() {
-    const response = await getMovies(this.state.movieTitle)
-    const movies = path(['data','Search'], response)
-    console.log('movies', movies)
-    this.setState({movies})
-
+  onSubmit() {
+    this.props.dispatch(fetchMovies(this.state.movieTitle))
   }
   render() {
+    const notFoundMessage = () => <p className="tc">Movie Not Found, try again!</p>
+    const movies = path(['Movies','movies','data','Search'],this.props)
     const buttonStyles = {height:'3rem', borderRadius: '2rem', margin:'.4rem .4rem 0 0', backgroundColor:'#255fbc'}
     return (    
       <div className="App">
@@ -52,17 +52,19 @@ class App extends Component {
           </div>
         </div>
         <div className="mt4">
-          <article>
-            {map(movie => (
-              <a href={movie.Poster} className="fl w-50 w-25-l link overflow-hidden">
-                <div role="img" aria-label={movie.Title} className="grow aspect-ratio--4x6 " style={{background: 'url(' + movie.Poster + ') no-repeat center center', backgroundSize: 'cover'}} />
-              </a>
-            ), this.state.movies)}
-          </article>
+          <Table movies={movies} />
+          {path(['Movies','movies','data','Response'],this.props) === "False" 
+            ? notFoundMessage()
+            : null }
         </div>
       </div>
     )
   }
 }
 
-export default App
+const mapStateToProps = state => {
+  const { Movies } = state
+  return { Movies }
+}
+
+export default connect(mapStateToProps)(App)
