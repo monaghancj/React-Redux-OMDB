@@ -1,3 +1,4 @@
 module.exports = {
-  apiUrl: 'https://www.omdbapi.com/'
+  apiUrl: 'http://www.omdbapi.com/',
+  apiKey: 'df751404'
 }

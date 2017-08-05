@@ -1,18 +1,10 @@
-const { apiUrl } = require('../config')
-const fetch = require('isomorphic-fetch')
+const { apiUrl, apiKey } = require('../config')
+const axios = require('axios')
 
 module.exports = {
   getMovies
 }
 
 function getMovies (movieTitle) {
-  return fetch(`${apiUrl}?s=${movieTitle}&r=json`, {
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      // 'Authorization': `Bearer ${getIdToken()}`
-    }
-  })
-    .then(response => response.json())
-    .catch(err => console.log(err))
+  return axios.get(`${apiUrl}?s=${movieTitle}&r=json&apikey=${apiKey}`)
 }
